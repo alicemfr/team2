@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # import pandas as pd
-# df = pd.read_csv('~/OneDrive - University of Exeter/Documents/Projects/Hackathon_2023/probe1_test.csv')
+df = pd.read_csv('~/OneDrive - University of Exeter/Documents/Projects/Hackathon_2023/topNonlinear.csv')
 
 
 def age_scatter(df, plot_sex, non_linear):
@@ -21,8 +21,10 @@ def age_scatter(df, plot_sex, non_linear):
         
     plt.ylim(0, 100)
     plt.xlim(5, 25)
-    plt.xlabel("Age (PCW)", fontsize = 15)
-    plt.ylabel("DNA methylation (%)", fontsize = 15)
+    plt.xticks(fontsize = 11)
+    plt.yticks(fontsize = 11)
+    plt.xlabel("Age (PCW)", fontsize = 14)
+    plt.ylabel("DNA methylation (%)", fontsize = 14)
 
     plt.show()
     
