@@ -1,68 +1,23 @@
 {% extends "layout.html" %}
 
 {% block content %}
+{{ data }}
 <div class="row">
 	<div class="col-sm-1"></div>
-	<div class="col-sm-5";>
-	  <p></p>
-	  <table id="table" class="table table-hover">
-		<tbody>
-		  {% for item in data %}
-		  <tr>
-			<th>Individual ID</th>
-			<td>{{ item[0] }}</td>
-		  </tr> 	
-		  <tr>
-			<th>Cohort</th>
-			<td>{{ item[1] }}</td>
-		  </tr> 
-		  <tr>
-			<th>Sex</th>
-			<td>{{ item[2] }}</td>
-		  </tr> 
-		  <tr>
-			<th>Age</th>
-			<td>{{ item[3] }}</td>
-		  </tr> 
-		  <tr>
-			<th>Post Conception Weeks</th>
-			<td>{{ item[4] }}</td>
-		  </tr> 
-		  <tr>
-			<th>FACS</th>
-			{% if facs %}
-			<td><a class=white href="{{ url_for('true', sample_name = item[0], table = 'facs')}}">{{ facs }}</a></td>
-			{% else %}
-			<td>{{ facs }}</td>
-			{% endif %}
-		  </tr> 
-		  <tr>
-			<th>RNASeq</th>
-			{% if rna %}
-			<td><a class=white href="{{ url_for('true', sample_name = item[0], table = 'rnaSeq')}}">{{ rna }}</a></td>
-			{% else %}
-			<td>{{ rna }}</td>
-			{% endif %}
-		  </tr> 
-		  <tr>
-			<th>ATACSeq</th>
-			<td>{{ atac }}</td>
-		  </tr> 
-		  {% endfor %}
-		</tbody>
-	  </table>
-	  <a class=white href="/">Back to search</a>
-	 </div>
+	<div class="col-sm-5" ;>
+		<p></p>
+		{% for item in data %}
+		{{ item[0] }}
+		{% endfor %}
+		<a class=white href="/">Back to search</a>
+	</div>
 </div>
-
-
 
 {% endblock %}
 
 
-      <p></p>
-      <h4>{{title}}</h4>
-      <p></p>
-      </center>
-      <p>{{description}}</p>
-    
+<p></p>
+<h4>{{title}}</h4>
+<p></p>
+
+<p>{{description}}</p>
