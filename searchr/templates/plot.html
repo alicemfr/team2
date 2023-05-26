@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+</head>
+
+<body>
+	<h3>Search by gene here</h3>
+	<!--Make sure the form has the autocomplete function switched off:-->
+	<form class="search" autocomplete="off" action="" method="post">
+		<div class="autocomplete" style="width:300px;">
+			<input id="myInput" type="text" name="searchr" placeholder="Input gene name, probe...">
+		</div>
+		<input type="submit">
+	</form>
+
+	<p>{{error}}</p>
+</body>
+{% endblock content%}
