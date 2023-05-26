@@ -53,6 +53,7 @@ def age_scatter(df, plot_sex, non_linear):
         else: 
             p = p + stat_smooth(method = "lm", formula = "y ~ x", se = True)
     
-    
+    p.save('plot_fig.png')
         
-    return p
+    # return p
+
