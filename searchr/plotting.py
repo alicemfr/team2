@@ -74,6 +74,7 @@ def test_plot(df):
     #plt.plot(xseq, lowess_y)
     #plt.fill_between(xseq, lowess_ci[0], lowess_ci[1], alpha=0.2)
     
+    # my attempt to manually add conf interval shading from the seaborn.regplot script
     plt.xlabel("Age (PCW)", fontsize=15)
     plt.ylabel("DNA methylation (%)", fontsize=15)
     FigureCanvas(fig)
