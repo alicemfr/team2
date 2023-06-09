@@ -1,23 +1,30 @@
 {% extends "layout.html" %}
 
 {% block content %}
-{{ data }}
 <div class="row">
-	<div class="col-sm-1"></div>
-	<div class="col-sm-5" ;>
-		<p></p>
-		{% for item in data %}
-		{{ item[0] }}
-		{% endfor %}
-		<a class=white href="/">Back to search</a>
+	<div class="col-sm-5">
+		<div id="plot_no_sex"><img src='data:image/png;base64,{{ plot }}' width="900" /></div>
+		<div id="plot_sex"><img src='data:image/png;base64,{{ sexplot }}' width="900" /></div>
 	</div>
+	<div class="col-sm-1">
+		<label class="switch">
+			<input type="checkbox" unchecked>
+			<span class="slider round"></span>
+		</label>
+	</div>
+	<a class=white href="/plot">Back to search</a>
 </div>
 
+<!-- Toggle script -->
+<script>
+	let mainContent = document.querySelector('#plot_no_sex');
+	let secondaryContent = document.querySelector('#plot_sex');
+
+	document.querySelector('.switch input').addEventListener('change', e => {
+		mainContent.style.display = e.target.checked ? 'none' : 'block';
+		secondaryContent.style.display = e.target.checked ? 'block' : 'none';
+	});
+</script>
+
+
 {% endblock %}
-
-
-<p></p>
-<h4>{{title}}</h4>
-<p></p>
-
-<p>{{description}}</p>

@@ -1,9 +1,27 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h2>Analysis Pipeline</h2>
+<h3>Analysis Pipeline</h3>
 <br>
-<p>This is how the data was analysed:</p>
-<br>
+<p>Our analysis pipeline showcases its ability to query >800,000 DNA methylation sites that have passed stringent
+    quality control and visualises the resulting data in an intuitive way.
 
-<img src="analysispipeline.jpg" width="100%">
+    We have utilised the Illumina Epic array to provide comprehensive coverage of DNA methylation within the human
+    brain. The Illumina Epic array enables quantitative investigation of selected methylation sites across the human
+    genome. Methylation data provides an opportunity to investigate hyper- and hypomethylation which not only impact
+    gene expression but have further implications in biological processes and diseases.
+
+    Our workflow begins with collating prefrontal cortex samples from the human brain. In total, 136 samples were
+    collated and run on the Epic array. During quality control and normalisation 45 samples were removed as a results of
+    failed samples, duplicate samples, cerebellum samples and child samples. Due to a sparsity of samples beyond 23
+    weeks, we reduced our samples to only those between 6 – 23 weeks post conception resulting in 91 samples to be
+    carried forward into the data analysis workflow.
+</p>
+
+<img src="static/img/Hackathon_workflow1.png" width="80%"></img>
+
+<p> Figure 1. Epic Array Workflow 1. This schematic demonstrates the Epic Array work from from data collection of fetal
+    brain samples to data analysis.
+</p> <br>
+
+<img src="/static/img/analysispipeline.jpg" width="100%">
 {% endblock content%}
