@@ -65,6 +65,7 @@ def test_plot(df):
     # ...so perhaps we should update seaborn to the newest version and then try...
     # sns.regplot(data=df, x="Age", y="Beta_percent", lowess=True, ci=95)
     
+    # my attempt below to manually add conf interval shading from the seaborn.regplot script
     #lowess_fit = use_lowess(df["Beta_percent"], df["Age"])
     #lowess_y = lowess_fit[:, 1]
     #ci = 95
@@ -74,7 +75,6 @@ def test_plot(df):
     #plt.plot(xseq, lowess_y)
     #plt.fill_between(xseq, lowess_ci[0], lowess_ci[1], alpha=0.2)
     
-    # my attempt to manually add conf interval shading from the seaborn.regplot script
     plt.xlabel("Age (PCW)", fontsize=15)
     plt.ylabel("DNA methylation (%)", fontsize=15)
     FigureCanvas(fig)
