@@ -34,6 +34,9 @@ def close_connection(exception):
 def about():
     return render_template("about.html")
 
+@app.route("/example")
+def example():
+    return render_template("example.html", title = "Example")
 
 @app.route("/pipeline")
 def pipeline():
