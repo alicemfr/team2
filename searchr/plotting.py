@@ -7,6 +7,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import numpy as np
 from matplotlib.figure import Figure
 from statsmodels.nonparametric.smoothers_lowess import lowess as use_lowess
+import statistics
+from moepy import lowess
 
 # import pandas as pd
 # df = pd.read_csv('~/OneDrive - University of Exeter/Documents/Projects/Hackathon_2023/probe1_test.csv')
@@ -54,26 +56,34 @@ def test_plot(df):
 
     fig, ax = plt.subplots(figsize=(10, 6))
     ax = sns.set_style(style="darkgrid")
-    sns.regplot(data=df, x="Age", y="Beta_percent")
-    # sns.regplot(data=df, x="Age", y="Beta_percent", lowess=True) # for nonlinear fit
+    #sns.regplot(data=df, x="Age", y="Beta_percent") # if Lowess = FALSE
+    
 
-    # attempting to add confidence interval shading to lowess fit...
-    # ...because adding ci=95 to sns.regplot() does not work (https://github.com/mwaskom/seaborn/issues/552)
-    # However, looks like it was recently fixed https://github.com/zeelsheladiya/seaborn/commit/f72896831af24da2dc52961653368ba7438c1c2f
-    # ...but it would seem this change is not present in the version of seaborn.regplot we are using
-    # ...so perhaps we should update seaborn to the newest version and then try...
-    # sns.regplot(data=df, x="Age", y="Beta_percent", lowess=True, ci=95)
+    # Lowess method using moepy (Merit Order Effect Python)
+    # url: https://ayrtonb.github.io/Merit-Order-Effect/
+    # doi: 10.5281/zenodo.4642896
+    
+    # prepare data
+    x = np.array(df["Age"]) # turn list into 1D arrays
+    y = np.array(df["Beta_percent"])
+    
+    # run lowess model
+    lowess_model = lowess.Lowess()
+    lowess_model.fit(x, y)
+    
+    # predict on new x data
+    x_pred = np.linspace(min(x), max(x), 91*2) # added double the number of samples for tighter fit
+    y_pred = lowess_model.predict(x_pred)
+    
+    # calc 95% confidence interval
+    upper = y_pred+(1.96*statistics.stdev(y_pred)) # 1.96 is equivalent to 2sd
+    lower = y_pred-(1.96*statistics.stdev(y_pred))
 
-    # my attempt below to manually add conf interval shading from the seaborn.regplot script
-    # lowess_fit = use_lowess(df["Beta_percent"], df["Age"])
-    # lowess_y = lowess_fit[:, 1]
-    # ci = 95
-    # lowess_ci = np.percentile(lowess_fit[:, 1:], [100 - ci / 2, ci / 2], axis=1)
-    # x = df["Age"]
-    # xseq = np.linspace(min(x), max(x), num=91)
-    # plt.plot(xseq, lowess_y)
-    # plt.fill_between(xseq, lowess_ci[0], lowess_ci[1], alpha=0.2)
-
+    # plot
+    plt.scatter(x, y) # scatter plot of data points
+    plt.plot(x_pred, y_pred, color='tab:blue', zorder=3) # lowess line 
+    plt.fill_between(x_pred, y1=upper, y2=lower, alpha=0.1, color='tab:blue') # shaded conf interval
+ 
     plt.xlabel("Age (PCW)", fontsize=15)
     plt.ylabel("DNA methylation (%)", fontsize=15)
     FigureCanvas(fig)
@@ -202,3 +212,32 @@ def sex_plot1(df):
     img.seek(0)
     figdata_png = base64.b64encode(img.getbuffer()).decode("ascii")
     return figdata_png
+    
+    
+    
+    
+    
+    
+    
+    #sns.regplot(data=df, x="Age", y="Beta_percent", lowess=True) # for nonlinear fit
+    
+    # attempting to add confidence interval shading to lowess fit...
+    # ...because adding ci=95 to sns.regplot() does not work (https://github.com/mwaskom/seaborn/issues/552)
+    # However, looks like it was recently fixed https://github.com/zeelsheladiya/seaborn/commit/f72896831af24da2dc52961653368ba7438c1c2f
+    # ...but it would seem this change is not present in the version of seaborn.regplot we are using
+    # ...so perhaps we should update seaborn to the newest version and then try...
+    # sns.regplot(data=df, x="Age", y="Beta_percent", lowess=True, ci=95)
+    
+    # below works #
+    # my attempt below to manually add conf interval shading from the seaborn.regplot script
+    #lowess_fit = use_lowess(df["Beta_percent"], df["Age"])
+    #lowess_y = lowess_fit[:, 1]
+    ##ci = 95
+    ##lowess_ci = np.percentile(lowess_fit[:, 1:], [100 - ci / 2, ci / 2], axis=1)
+    #upper = lowess_y+(1.96*statistics.stdev(lowess_y))
+    #lower = lowess_y-(1.96*statistics.stdev(lowess_y))
+    #x = df["Age"]
+    #xseq = np.linspace(min(x), max(x), num=91)
+    #plt.plot(xseq, lowess_y)
+    ##plt.fill_between(xseq, lowess_ci[0], lowess_ci[1], alpha=0.2)
+    #plt.fill_between(xseq, y1=upper, y2=lower, alpha=0.2)
