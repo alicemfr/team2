@@ -3,15 +3,18 @@
 </head>
 
 <body>
-	<h3>Search by gene here</h3>
+	<h3>Search by gene or probe name here</h3>
 	<!--Make sure the form has the autocomplete function switched off:-->
-	<form class="search" autocomplete="off" action="" method="post">
-		<div class="autocomplete" style="width:300px;">
+	<form id="geneForm" class="search" autocomplete="off" action="" method="post">
+		<div class="autocomplete" style="width:95%">
 			<input id="myInput" type="text" name="searchr" placeholder="Input gene name, probe...">
 		</div>
-		<input type="submit">
+		<!--<input type="submit">-->
 	</form>
-
+	{{ searchr }}
+	{{ gene }}
 	<p>{{error}}</p>
 </body>
+
+
 {% endblock content%}
