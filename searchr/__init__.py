@@ -158,11 +158,12 @@ def get_data(
     data = result_df
 
     # plot the linear and nonlinear regression with and without sex differences
-    plot, nlinplot = test_plot(data)
+    df, plot, nlinplot = test_plot(data)
 
     sexplot, nlinsexplot = sex_plot(data)
     return render_template(
         "table.html",
+        # data=df,
         probe_name=probe_name,
         gene=gene_name,
         plot=plot,
