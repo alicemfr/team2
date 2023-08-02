@@ -56,7 +56,7 @@ def plot():
 
 @app.route("/plot/<gene_name>", methods=["GET", "POST"])
 def get_gene(gene_name):
-    searchr = gene_name
+    searchr = gene_name.rstrip()
     # search by gene
     cursor = get_db().cursor()
     cursor.execute(
@@ -67,6 +67,11 @@ def get_gene(gene_name):
     )
     get_db().commit()
     probe_result = cursor.fetchall()
+
+    try:
+        probe_result[0]
+    except:
+        return render_template("404.html", error=gene_name)
 
     probe_list = []
     for i in probe_result:
@@ -91,7 +96,7 @@ def get_data(
 ):  # this route has been updated to use a template containing a form
     # searchr = probe_name
     gene_name = searchr.split("=")[0].upper()
-    probe_name = searchr.split("=")[1]
+    probe_name = searchr.rstrip().split("=")[1]
     cursor = get_db().cursor()
     cursor.execute(
         "SELECT PROBEINFO.ProbeKey \
@@ -100,7 +105,12 @@ def get_data(
         [probe_name],
     )
     probe_key_result = cursor.fetchall()
-    index_CpG = probe_key_result[0][0]
+
+    ## error
+    try:
+        index_CpG = probe_key_result[0][0]
+    except:
+        return render_template("404.html", error=probe_name)
 
     # Based on the Probe Key, run the corresponding query
     if index_CpG <= 107899:
