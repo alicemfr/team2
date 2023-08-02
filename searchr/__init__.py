@@ -68,6 +68,7 @@ def get_gene(gene_name):
     get_db().commit()
     probe_result = cursor.fetchall()
 
+    ## check that the result is not empty
     try:
         probe_result[0]
     except:
@@ -106,7 +107,7 @@ def get_data(
     )
     probe_key_result = cursor.fetchall()
 
-    ## error
+    ## check that the result is not empty
     try:
         index_CpG = probe_key_result[0][0]
     except:
@@ -168,12 +169,11 @@ def get_data(
     data = result_df
 
     # plot the linear and nonlinear regression with and without sex differences
-    df, plot, nlinplot = test_plot(data)
+    plot, nlinplot = test_plot(data)
 
     sexplot, nlinsexplot = sex_plot(data)
     return render_template(
         "table.html",
-        # data=df,
         probe_name=probe_name,
         gene=gene_name,
         plot=plot,

@@ -100,7 +100,7 @@ def test_plot(df):
     p.savefig(img, format="png", dpi=300)
     nonlinear_png = base64.b64encode(img.getbuffer()).decode("ascii")
 
-    return df, linear_png, nonlinear_png
+    return linear_png, nonlinear_png
 
 
 def sex_plot(df):
