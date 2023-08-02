@@ -161,9 +161,10 @@ def get_data(
     # plot = test_plot(data)
     plot, nlinplot = test_plot(data)
 
-    sexplot, nlinsexplot = sex_plot(data)
+    data, sexplot, nlinsexplot = sex_plot(data)
     return render_template(
         "table.html",
+        # data=data,
         probe_name=probe_name,
         gene=gene_name,
         plot=plot,
