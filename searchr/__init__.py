@@ -157,14 +157,12 @@ def get_data(
     result_df.columns = ["CpG", "Age", "Sex", "Value"]
     data = result_df
 
-    # plot = age_scatter_save(data, False, False)
-    # plot = test_plot(data)
+    # plot the linear and nonlinear regression with and without sex differences
     plot, nlinplot = test_plot(data)
 
-    data, sexplot, nlinsexplot = sex_plot(data)
+    sexplot, nlinsexplot = sex_plot(data)
     return render_template(
         "table.html",
-        # data=data,
         probe_name=probe_name,
         gene=gene_name,
         plot=plot,

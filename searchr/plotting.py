@@ -189,6 +189,8 @@ def sex_plot(df):
 
     female = sex.get("F")
     male = sex.get("M")
+    x = np.array(df["Age"])  # turn list into 1D arrays
+    y = np.array(df["Beta_percent"])
     # plot
     plt.scatter(x, y)  # scatter plot of data points
     plt.plot(female[0], female[1], color="tab:blue", zorder=3)  # f lowess line
@@ -207,7 +209,7 @@ def sex_plot(df):
     fig.savefig(img, format="png")
     img.seek(0)
     nlinear_png = base64.b64encode(img.getbuffer()).decode("ascii")
-    return sex, linear_png, nlinear_png
+    return linear_png, nlinear_png
 
 
 ## prev versions of plotting functions ##
