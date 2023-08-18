@@ -76,9 +76,9 @@ def test_plot(df):
     x_pred = np.linspace(min(x), max(x), 91*2) # added double the number of samples for tighter fit
     y_pred = lowess_model.predict(x_pred)
     
-    # calc 95% confidence interval
-    upper = y_pred+(1.96*statistics.stdev(y_pred)) # 1.96 is equivalent to 2sd
-    lower = y_pred-(1.96*statistics.stdev(y_pred))
+    # calc 1sd confidence interval
+    upper = y_pred+(statistics.stdev(y_pred)/2)
+    lower = y_pred-(statistics.stdev(y_pred)/2)
 
     # plot
     plt.scatter(x, y) # scatter plot of data points
@@ -87,6 +87,8 @@ def test_plot(df):
  
     plt.xlabel("Age (PCW)", fontsize=15)
     plt.ylabel("DNA methylation (%)", fontsize=15)
+    plt.ylim((0,100))
+    
     FigureCanvas(fig)
     img = io.BytesIO()
     fig.savefig(img, format="png")
