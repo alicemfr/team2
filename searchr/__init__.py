@@ -1,7 +1,4 @@
-import os
-import re
-
-from flask import Flask, render_template, request, redirect, url_for, flash, Response, g
+from flask import Flask, render_template, request, redirect, url_for, g
 import sqlite3
 import pandas as pd
 
@@ -49,93 +46,113 @@ def team():
 def plot():
     if request.method == "POST":
         searchr = request.form["searchr"]
-        # sex = request.form["sex"]
-        return redirect(url_for("get_data", gene_name=searchr))
+        if searchr[0:2] == "cg" and len(searchr) > 9:
+            searchr = "={}".format(searchr)
+            return redirect(url_for("get_data", searchr=searchr))
+        else:
+            return redirect(url_for("get_gene", gene_name=searchr))
     return render_template("plot.html")
 
 
-@app.route("/plot/<gene_name>")
-def get_data(
-    gene_name,
-):  # this route has been updated to use a template containing a form
-    searchr = gene_name
+@app.route("/plot/<gene_name>", methods=["GET", "POST"])
+def get_gene(gene_name):
+    searchr = gene_name.rstrip()
+    # search by gene
     cursor = get_db().cursor()
-    if searchr[0:2] == "cg" and len(searchr) > 9:
-        check = "This is actiavted"
+    cursor.execute(
+        "SELECT EPIC.ProbeName \
+        from EPIC \
+        WHERE EPIC.GeneName LIKE ?",
+        [searchr],
+    )
+    get_db().commit()
+    probe_result = cursor.fetchall()
+
+    ## check that the result is not empty
+    try:
+        probe_result[0]
+    except:
+        return render_template("404.html", error=gene_name)
+
+    probe_list = []
+    for i in probe_result:
+        probe_list.append(i[0])
+
+    return render_template(
+        "probes.html", data=probe_result, show_results=1, searchr=searchr
+    )  # title = title, headings = headings,
+
+
+@app.route("/plot/cpg", methods=["GET", "POST"])
+def send_probe():
+    searchr = request.form.get("searchr")
+
+    # return render_template("plot.html", gene=gene, searchr=probe)
+    return redirect(url_for("get_data", searchr=searchr))
+
+
+@app.route("/plot/cpg/<searchr>")
+def get_data(
+    searchr,
+):  # this route has been updated to use a template containing a form
+    # searchr = probe_name
+    gene_name = searchr.split("=")[0].upper()
+    probe_name = searchr.rstrip().split("=")[1]
+    cursor = get_db().cursor()
+    cursor.execute(
+        "SELECT PROBEINFO.ProbeKey \
+            FROM PROBEINFO \
+            WHERE PROBEINFO.ProbeName = ?;",
+        [probe_name],
+    )
+    probe_key_result = cursor.fetchall()
+
+    ## check that the result is not empty
+    try:
+        index_CpG = probe_key_result[0][0]
+    except:
+        return render_template("404.html", error=probe_name)
+
+    # Based on the Probe Key, run the corresponding query
+    if index_CpG <= 107899:
         cursor.execute(
-            "SELECT PROBEINFO.ProbeKey \
-                FROM PROBEINFO \
-                WHERE PROBEINFO.ProbeName = ?;",
-            [searchr],
+            "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, AAAVALUE.Value \
+            FROM PROBEINFO, PHENO, AAAVALUE \
+            WHERE AAAVALUE.ProbeKey = ? \
+            AND PROBEINFO.ProbeKey = ? \
+            AND AAAVALUE.SampleKey = PHENO.SampleKey;",
+            [index_CpG, index_CpG],
         )
-        result = cursor.fetchall()
-        check = result
-        index_CpG = result[0][0]
-        check1 = index_CpG
-        # Based on the Probe Key, run the corresponding query
-        if index_CpG <= 107899:
-            # check = "Go to AAA table"
-            cursor.execute(
-                "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, AAAVALUE.Value \
-                FROM PROBEINFO, PHENO, AAAVALUE \
-                WHERE AAAVALUE.ProbeKey = ? \
-                AND PROBEINFO.ProbeKey = ? \
-                AND AAAVALUE.SampleKey = PHENO.SampleKey;",
-                [index_CpG, index_CpG],
-            )
-        elif 307899 >= index_CpG > 107899:
-            check = "Go to BBB table"
-            cursor.execute(
-                "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, BBBVALUE.Value \
-                FROM PROBEINFO, PHENO, BBBVALUE \
-                WHERE BBBVALUE.ProbeKey = ? \
-                AND PROBEINFO.ProbeKey = ? \
-                AND BBBVALUE.SampleKey = PHENO.SampleKey;",
-                [index_CpG, index_CpG],
-            )
-        elif 507899 >= index_CpG > 307899:
-            check = "Go to CCC table"
-            cursor.execute(
-                "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, CCCVALUE.Value \
-                FROM PROBEINFO, PHENO, CCCVALUE \
-                WHERE CCCVALUE.ProbeKey = ? \
-                AND PROBEINFO.ProbeKey = ? \
-                AND CCCVALUE.SampleKey = PHENO.SampleKey;",
-                [index_CpG, index_CpG],
-            )
-        elif 807899 >= index_CpG > 507899:
-            check = "Go to DDD table"
-            cursor.execute(
-                "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, DDDVALUE.Value \
-                FROM PROBEINFO, PHENO, DDDVALUE \
-                WHERE DDDVALUE.ProbeKey = ? \
-                AND PROBEINFO.ProbeKey = ? \
-                AND DDDVALUE.SampleKey = PHENO.SampleKey;",
-                [index_CpG, index_CpG],
-            )
-        get_db().commit()
-        data = cursor.fetchall()
-    else:
-        # search by gene
+    elif 307899 >= index_CpG > 107899:
         cursor.execute(
-            "SELECT betas.CpG \
-                from betas, epic \
-                WHERE epic.CpG = betas.CpG AND\
-                epic.GeneName LIKE ? \
-                LIMIT 1;",
-            [searchr],
+            "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, BBBVALUE.Value \
+            FROM PROBEINFO, PHENO, BBBVALUE \
+            WHERE BBBVALUE.ProbeKey = ? \
+            AND PROBEINFO.ProbeKey = ? \
+            AND BBBVALUE.SampleKey = PHENO.SampleKey;",
+            [index_CpG, index_CpG],
         )
-        get_db().commit()
-        cpg = cursor.fetchall()
+    elif 507899 >= index_CpG > 307899:
         cursor.execute(
-            "SELECT betas.CpG, pheno.Age, betas.Value, pheno.Sex \
-                                from betas, pheno \
-                                WHERE betas.SampleName = pheno.SampleName AND \
-                                betas.CpG LIKE ?",
-            [cpg],
+            "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, CCCVALUE.Value \
+            FROM PROBEINFO, PHENO, CCCVALUE \
+            WHERE CCCVALUE.ProbeKey = ? \
+            AND PROBEINFO.ProbeKey = ? \
+            AND CCCVALUE.SampleKey = PHENO.SampleKey;",
+            [index_CpG, index_CpG],
         )
-    # get_db().commit()
-    # data = cursor.fetchall()
+    elif 807899 >= index_CpG > 507899:
+        cursor.execute(
+            "SELECT PROBEINFO.ProbeName, PHENO.Age, PHENO.Sex, DDDVALUE.Value \
+            FROM PROBEINFO, PHENO, DDDVALUE \
+            WHERE DDDVALUE.ProbeKey = ? \
+            AND PROBEINFO.ProbeKey = ? \
+            AND DDDVALUE.SampleKey = PHENO.SampleKey;",
+            [index_CpG, index_CpG],
+        )
+    get_db().commit()
+    data = cursor.fetchall()
+
     CpG_list = []
     Age_list = []
     Value_list = []
@@ -151,12 +168,19 @@ def get_data(
     result_df.columns = ["CpG", "Age", "Sex", "Value"]
     data = result_df
 
-    # plot = age_scatter_save(data, False, False)
-    # plot = test_plot(data)
-    plot = test_plot(data)
+    # plot the linear and nonlinear regression with and without sex differences
+    plot, nlinplot = test_plot(data)
 
-    sexplot = sex_plot(data)
-    return render_template("table.html", plot=plot, sexplot=sexplot)
+    sexplot, nlinsexplot = sex_plot(data)
+    return render_template(
+        "table.html",
+        probe_name=probe_name,
+        gene=gene_name,
+        plot=plot,
+        nlinplot=nlinplot,
+        sexplot=sexplot,
+        nlinsexplot=nlinsexplot,
+    )
 
 
 if __name__ == "__main__":

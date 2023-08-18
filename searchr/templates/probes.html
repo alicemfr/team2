@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<head>
+
+    <!--connect javascript to base html -->
+    <!-- connects  to jquery and the datatables database-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+
+
+</head>
+
+<body>
+
+    <div class="row">
+        <h2>{{searchr.upper()}}</h2>
+        <div class="col-sm-11">
+            <input id='input' onkeyup='searchTable()' type='text' placeholder="Search probes in chosen gene">
+        </div>
+    </div>
+
+    <div class="mainTable" style="overflow: scroll; max-height: 500px;">
+        <form id="tableForm" action="{{ url_for('send_probe') }}" method="post">
+            <table id="table" class="table table-hover" style="table-layout: fixed;">
+                <thead>
+                    <tr id="tableHeader">
+                        <th>Probe Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr onclick="submitForm(this)">
+                        <td><input type="hidden" name="searchr" value="{{ searchr }}={{ item[0] }}">{{ item[0] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <input type="submit" value="Submit" style="display: none;">
+        </form>
+    </div>
+
+    <br>
+    <a class=white href="/plot">Back to gene search</a>
+    </div>
+</body>
+
+
+<script>
+    function submitForm(e) {
+
+        document.getElementById('tableForm').submit();
+    }
+</script>
+
+
+
+{% endblock %}

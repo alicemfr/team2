@@ -2,29 +2,74 @@
 
 {% block content %}
 <div class="row">
-	<div class="col-sm-5">
-		<div id="plot_no_sex"><img src='data:image/png;base64,{{ plot }}' width="900" /></div>
-		<div id="plot_sex"><img src='data:image/png;base64,{{ sexplot }}' width="900" /></div>
+	<h2>{{gene}}</h2>
+
+	<div class="col-sm-5" text-align="centre">
+		<h4>{{probe_name}}</h4>
+		<div class="row chart">
+			<img src='data:image/png;base64,{{ plot }}' width="900" />
+		</div>
+		<div class="row chart hidenlinear">
+			<img src='data:image/png;base64,{{ nlinplot }}' width="900" />
+		</div>
+		<div class="row chart sex">
+			<img src='data:image/png;base64,{{ sexplot }}' width="900" />
+		</div>
+		<div class="row chart hidesexnlin">
+			<img src='data:image/png;base64,{{ nlinsexplot }}' width="900" />
+		</div>
 	</div>
-	<div class="col-sm-1">
-		<label class="switch">
-			<input type="checkbox" unchecked>
-			<span class="slider round"></span>
+	<div class="col-sm-4">
+		<label class="toggle">
+			<input id="toggle-sex" class="toggle-checkbox" type="checkbox">
+			<div class="toggle-switch"></div>
+			<span class="toggle-label">Check for sex differences</span>
+		</label>
+		<br>
+		<label class="toggle_nlinear">
+			<input id="toggle-nlin" class="toggle-checkbox" type="checkbox">
+			<div class="toggle-switch"></div>
+			<span class="toggle-label">Fit a non-linear regression</span>
 		</label>
 	</div>
-	<a class=white href="/plot">Back to search</a>
+
 </div>
 
-<!-- Toggle script -->
+
+<div><a class=white href="/plot">Back to search</a></div>
+
+<!-- Toggle script-->
 <script>
-	let mainContent = document.querySelector('#plot_no_sex');
-	let secondaryContent = document.querySelector('#plot_sex');
+	const charts = document.querySelectorAll(".chart");
 
-	document.querySelector('.switch input').addEventListener('change', e => {
-		mainContent.style.display = e.target.checked ? 'none' : 'block';
-		secondaryContent.style.display = e.target.checked ? 'block' : 'none';
-	});
+	document.querySelector('.toggle input').addEventListener('change', e => {
+		if (document.getElementById("toggle-nlin").checked) {
+			charts.forEach(chart => {
+				chart.classList.toggle("hidesexnlin");
+				chart.classList.toggle("hidenlinear");
+			})
+		} else {
+			charts.forEach(chart => {
+				chart.classList.toggle("sex");
+
+			})
+		}
+	})
+
+	document.querySelector('.toggle_nlinear input').addEventListener('change', e => {
+		if (document.getElementById("toggle-sex").checked) {
+			charts.forEach(chart => {
+				chart.classList.toggle("sex");
+				chart.classList.toggle("hidesexnlin");
+			})
+		} else {
+			charts.forEach(chart => {
+				chart.classList.toggle("hidenlinear");
+			})
+		}
+	})
+
+
 </script>
-
 
 {% endblock %}
